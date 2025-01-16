@@ -27,8 +27,9 @@ class PointGuide extends StatelessWidget{
                 fontSize: 20,
                 color: Colorsetting.title
               ),
-            )
-          )
+            ),
+          ),
+          Text('You can get an exiciting coupon by exchanging your point!',style: TextStyle(fontWeight: FontWeight.bold,color:Colorsetting.font),),
         ],
       ),
     );
