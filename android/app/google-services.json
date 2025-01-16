@@ -1,0 +1,54 @@
+{
+  "project_info": {
+    "project_number": "554357086924",
+    "project_id": "rblmalaysia",
+    "storage_bucket": "rblmalaysia.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:554357086924:android:111322f427ae9115a08069",
+        "android_client_info": {
+          "package_name": "com.rblmalaysia.equinox"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "554357086924-nj28693sd975fsrn7fgf1qac7fnofqmj.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.rblmalaysia.equinox",
+            "certificate_hash": "d6e40a19cb8d4869d7d7825f7408ac8f4f134742"
+          }
+        },
+        {
+          "client_id": "554357086924-rn0mrojfpk2thlt5mv1otqhlg6opcme0.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAi0Qdv9wAZ9MaPoKgJPZ5myyfIbhwm5Dg"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "554357086924-rn0mrojfpk2thlt5mv1otqhlg6opcme0.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "554357086924-jsi71vb72318pcbhd2cp1pfqs7653bvt.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.rbl"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
