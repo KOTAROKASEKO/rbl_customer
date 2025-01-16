@@ -15,6 +15,8 @@ import 'package:rbl/point/dailystreak/dailyStreak.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:rbl/referralPage.dart/referralPage.dart';
 
+import 'PointGuide.dart';
+
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
   @override
@@ -506,7 +508,17 @@ class _HomePageState extends State<HomePage> {
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children:[
-              Text('${point}pt',style: const TextStyle(fontSize: 30),),
+              GestureDetector(
+                onTap:(){
+                  Navigator.push(context, MaterialPageRoute(builder: (context){
+                    return PointGuide();
+                  }));
+              },
+                child:Text('${point}pt',style: const TextStyle(
+                  fontSize: 30,
+                  fontFamily: 'number',
+                  ),),
+              ),
               const SizedBox(width: 20,),
               GestureDetector(
                 child: Container(
