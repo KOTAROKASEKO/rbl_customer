@@ -7,6 +7,7 @@ import 'package:rbl/Account/PAGE_authentication.dart';
 import 'package:rbl/Account/userId.dart';
 import 'package:rbl/firebase_options.dart';
 import 'package:rbl/home/searchModel.dart';
+import 'package:rbl/tabProviderService.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 //This page initialises firebase, localdatabase(sharedpreference) ,provider
@@ -24,6 +25,7 @@ void main() async {
     MultiProvider(
       providers: [
         ChangeNotifierProvider(create: (context) => ReservationFilterProvider(),),
+        ChangeNotifierProvider(create: (context) => Tabproviderservice(),),
       ],
        child: const MyApp(),
     ),

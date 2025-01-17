@@ -1,14 +1,32 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:rbl/Setting/ColorSetting.dart';
 
 class treatmentDescription extends StatefulWidget {
-  const treatmentDescription({super.key});
+  final String treatment;
+  const treatmentDescription({super.key, required this.treatment});
 
   @override
   _treatmentDescriptionState createState() => _treatmentDescriptionState();
 }
 
 class _treatmentDescriptionState extends State<treatmentDescription> {
+  
+  String? detail;
+
+  @override
+  void initState() {
+    super.initState();
+    fetchTreatment();
+  }
+  
+  Future<void> fetchTreatment() async{
+    DocumentSnapshot snapshot = await FirebaseFirestore.instance.collection('treatment')
+    .doc(widget.treatment)
+    .get();
+
+    detail = snapshot['detail'];
+  }
   @override
   Widget build(BuildContext context) {
     return Scaffold(

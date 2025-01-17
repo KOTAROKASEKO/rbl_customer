@@ -1,10 +1,12 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:rbl/Account/userId.dart';
 import 'package:rbl/Setting/ColorSetting.dart';
 import 'package:rbl/coupon/PAGE_Coupon.dart';
 import 'package:rbl/home/PAGE_homePage.dart';
 import 'package:rbl/reservationService/ceilingTab.dart';
+import 'package:rbl/tabProviderService.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class BottomTabView extends StatefulWidget {
@@ -15,7 +17,6 @@ class BottomTabView extends StatefulWidget {
 }
 
 class _BottomTabViewState extends State<BottomTabView> {
-  // Index for the selected tab
   int _selectedIndex = 0;
 
   final List<GlobalKey<NavigatorState>> _navigatorKeys = [
@@ -46,15 +47,12 @@ class _BottomTabViewState extends State<BottomTabView> {
         List<dynamic> invitationList = data['invitationList'];
         if (invitationList.isNotEmpty && mounted) {
           if(invitationList.length==3||invitationList.length==6||invitationList.length==9){
-            
-            
             if(await checkIfItshouldBeShown(prefs, invitationList.length)){
               prefs.setInt('alreadyShow',invitationList.length);
               showDialog(
                     context: context,
                     builder: (context) {
                       return StatefulBuilder(
-                        
                         builder: (context, setState){
                         return  AlertDialog( // Use AlertDialog for a proper dialog
                         content: SizedBox( // Wrap content in Container for styling
@@ -63,7 +61,6 @@ class _BottomTabViewState extends State<BottomTabView> {
                           child: Center(
                             child: ListView(
                               children: [
-                                
                                 const Row(
                                   mainAxisAlignment: MainAxisAlignment.start,
                                   children: [
@@ -118,11 +115,9 @@ class _BottomTabViewState extends State<BottomTabView> {
                           borderRadius: BorderRadius.circular(10.0),
                         ),
                       );
-
-                        });
-                    },
-                  );
-
+                  });
+                },
+              );
             }
           }
         }
@@ -144,16 +139,20 @@ class _BottomTabViewState extends State<BottomTabView> {
   }
   
   // Function to handle tab change
-  void _onItemTapped(int index) {
-    if (_selectedIndex != index) {
-      setState(() {
-        _selectedIndex = index;
-      });
-    } else {
-      // Pop to the first screen if the current tab is tapped again
-      _navigatorKeys[index].currentState?.popUntil((route) => route.isFirst);
-    }
+void _onItemTapped(int index) {
+  var tabProviderInstance = Provider.of<Tabproviderservice>(context, listen: false);
+  if (tabProviderInstance.getTabIndex() != index) {
+    setState(() {
+      _selectedIndex = index; // Update the local state
+    });
+    tabProviderInstance.changeIndex(index); // Update the Provider state
+  } else {
+    // Pop to the first screen if the current tab is tapped again
+    _navigatorKeys[index].currentState?.popUntil((route) => route.isFirst);
   }
+}
+
+
 
   Future<bool> _onWillPop() async {
     final isFirstRouteInCurrentTab =
@@ -192,43 +191,50 @@ class _BottomTabViewState extends State<BottomTabView> {
   }
 
   @override
-  Widget build(BuildContext context) {
-    // ignore: deprecated_member_use
-    return WillPopScope(
-      onWillPop: _onWillPop,
-      child: Scaffold(
-        body: Stack(
-          children: List.generate(
-            _navigatorKeys.length,
-            (index) => _buildOffstageNavigator(index),
-          ),
-        ),
-        bottomNavigationBar: BottomNavigationBar(
-          selectedIconTheme: const IconThemeData(color: Colorsetting.tabColor),
-          selectedItemColor: Colorsetting.tabColor,
-          unselectedItemColor: Colorsetting.nonSelectedColor,
-          currentIndex: _selectedIndex, // Current selected tab
-          onTap: _onItemTapped, // Update selected tab when tapped
-          items: [
-            BottomNavigationBarItem(
-              icon: Image.asset('assets/Icon_RBL.png', width: 25, height: 20, color: _selectedIndex == 0 ? Colorsetting.tabColor : Colorsetting.nonSelectedColor),
-              label: 'Home',
-            ),
-            const BottomNavigationBarItem(
-              icon: Icon(
-                Icons.check_box,
-              ),
-              label: 'Reservations',
-            ),
-            const BottomNavigationBarItem(
-              icon: Icon(
-                Icons.card_giftcard,
-              ),
-              label: 'Coupons',
-            ),
-          ],
+Widget build(BuildContext context) {
+  var tabProviderInstance = Provider.of<Tabproviderservice>(context);
+
+  // Sync `_selectedIndex` with the provider's index
+  _selectedIndex = tabProviderInstance.getTabIndex();
+
+  return WillPopScope(
+    onWillPop: _onWillPop,
+    child: Scaffold(
+      body: Stack(
+        children: List.generate(
+          _navigatorKeys.length,
+          (index) => _buildOffstageNavigator(index),
         ),
       ),
-    );
-  }
+      bottomNavigationBar: BottomNavigationBar(
+        selectedIconTheme: const IconThemeData(color: Colorsetting.tabColor),
+        selectedItemColor: Colorsetting.tabColor,
+        unselectedItemColor: Colorsetting.nonSelectedColor,
+        currentIndex: _selectedIndex, // Use the local `_selectedIndex`
+        onTap: _onItemTapped, // Update selected tab when tapped
+        items: [
+          BottomNavigationBarItem(
+            icon: Image.asset(
+              'assets/Icon_RBL.png',
+              width: 25,
+              height: 20,
+              color: _selectedIndex == 0
+                  ? Colorsetting.tabColor
+                  : Colorsetting.nonSelectedColor,
+            ),
+            label: 'Home',
+          ),
+          const BottomNavigationBarItem(
+            icon: Icon(Icons.check_box),
+            label: 'Reservations',
+          ),
+          const BottomNavigationBarItem(
+            icon: Icon(Icons.card_giftcard),
+            label: 'Coupons',
+          ),
+        ],
+      ),
+    ),
+  );
+}
 }

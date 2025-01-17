@@ -443,7 +443,7 @@ class _ReservationViewState extends State<ReservationView> {
                       onTap: () {
                         Navigator.push(
                           context,
-                          MaterialPageRoute(builder: (context) => const treatmentDescription()),
+                          MaterialPageRoute(builder: (context) => treatmentDescription(treatment:_pickedTreatment)),
                         );
                       },
                     ),
