@@ -93,30 +93,58 @@ class PointGuide extends StatelessWidget{
               )
             ],
           ),
+          Padding(padding: EdgeInsets.only(top:20, left: 20),
+          child: Text('Terms and condition:', style: TextStyle(
+            fontWeight: FontWeight.bold,
+            color: Colorsetting.title,
+            fontSize: 16,
+            ),),
+          ),
+          Padding(padding: EdgeInsets.only(left: 20),
+            child: Text('・You cannot use screen shot of a QR code\n・Expired coupon cannot be used\n・Same coupon can be used only once\n・Illegaly genedrated code cannot be used',
+             style: TextStyle(fontWeight: FontWeight.bold,
+              color: Colorsetting.font,
+              ),
+            ),
+            ),
           SizedBox(height: 20,),
           GestureDetector(
             onTap: (){
               Navigator.pop(context);
               instance.changeIndex(2);
             },
-            child: Container(
-            width: 200,
-            height: 50,
-            decoration: BoxDecoration(
-              color: const Color.fromARGB(255, 255, 222, 122),
-              borderRadius: BorderRadius.circular(25)
-            ),
-            child: const Center(
-              child: Text(
-                'see available coupons →',
-                style: TextStyle(
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.white
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children:[
+              SizedBox(width: 10,),
+              Container(
+                width: 200,
+                height: 100,
+                decoration: BoxDecoration(
+                  color: const Color.fromARGB(255, 255, 213, 86),
+                  borderRadius: BorderRadius.circular(25),
+                  boxShadow: [BoxShadow(
+                    color: const Color.fromARGB(255, 224, 224, 224),
+                    spreadRadius: 4,
+                    blurRadius: 5,
+                    offset: Offset(1,1)
+                  )]
+                ),
+                child: const Center(
+                  child: Text(
+                    'see available coupons →',
+                    style: TextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white
+                    ),
+                    textAlign: TextAlign.center,
+                  ),
                 ),
               ),
-            ),
-          ),)
+              SizedBox(width: 10,),
+            ]),
+          )
         ],
       ),
     );
