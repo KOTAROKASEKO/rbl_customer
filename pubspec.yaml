@@ -107,6 +107,7 @@ flutter:
     - assets/friendInvitation.webp
     - assets/rblmalaysia-firebase-adminsdk-lxp4c-ef90dcc10a.json
     - assets/cat.png
+    - assets/highfive.png
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/to/resolution-aware-images

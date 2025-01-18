@@ -130,9 +130,9 @@ class _HomePageState extends State<HomePage> {
         const SizedBox(width: 10),
         Column(
           children: [
-            Text('${day+1}'),
+            Text('${day+1}',style: TextStyle(fontWeight: FontWeight.bold,color: Colorsetting.font),),
             icon,
-            Text('${getWhichDay(day+1)}pt'),
+            Text('${getWhichDay(day+1)}pt',style: TextStyle(fontWeight: FontWeight.bold,color: Colorsetting.font)),
           ],
         ),
       ],
@@ -456,8 +456,14 @@ class _HomePageState extends State<HomePage> {
             Expanded(
               child: Container(
             decoration: BoxDecoration(
-              color: const Color.fromARGB(255, 188, 188, 188),
+              color: const Color.fromARGB(255, 255, 255, 255),
               borderRadius: BorderRadius.circular(20),
+              boxShadow: [BoxShadow(
+                color: const Color.fromARGB(255, 214, 214, 214),
+                spreadRadius: 4.0,
+                blurRadius: 7.0,
+                offset: Offset(1, 1)
+              )]
             ),
             child: Column(
               children: [
@@ -466,13 +472,14 @@ class _HomePageState extends State<HomePage> {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     Container(
-                      width: 200,
-                      height: 50,
+                      
                       decoration: BoxDecoration(
-                        color: const Color.fromARGB(255, 247, 88, 186),
+                        color: const Color.fromARGB(255, 255, 163, 220),
                         borderRadius: BorderRadius.circular(25),
                       ),
-                      child:const Center(child:Text('Daily Bonus!!',style: TextStyle(fontSize: 23, color: Colors.white, fontWeight: FontWeight.bold),),),
+                      child:const Center(child:Padding(
+                        padding: EdgeInsets.only(top: 5,bottom: 5,left: 10,right: 10),
+                        child:Text('Daily Bonus!!',style: TextStyle(fontSize: 17, color: Colors.white, fontWeight: FontWeight.bold),)),),
                       ),
                   ],
                 ),
@@ -493,6 +500,7 @@ class _HomePageState extends State<HomePage> {
                 child:Text('${point}pt',style: const TextStyle(
                   fontSize: 30,
                   fontFamily: 'number',
+                  color: Color.fromARGB(255, 86, 86, 86),
                   ),),
               ),
               const SizedBox(width: 20,),
@@ -583,17 +591,19 @@ class _HomePageState extends State<HomePage> {
               ),
             GestureDetector(
               child: Container(
-                width: 200,
-                height: 60,
+                
                 decoration: BoxDecoration(
-                  color: Dailystreak.didUserLoginTdy ? const Color.fromARGB(255, 180, 178, 178): const Color.fromARGB(255, 24, 171, 80),
+                  color: Dailystreak.didUserLoginTdy ? const Color.fromARGB(255, 225, 225, 225): null,
+                  border: Dailystreak.didUserLoginTdy ? null: Border.all(),
                   borderRadius: BorderRadius.circular(30),
                 ),
                 child: Center(
+                  child:Padding(padding: EdgeInsets.only(top:5,bottom: 5,left: 15,right: 15),
                   child: Dailystreak.didUserLoginTdy ?
-                  const Text('See you tomorrow!', style: TextStyle(fontFamily: 'fancy', fontSize: 20, fontWeight: FontWeight.bold, color: Color.fromARGB(255, 0, 0, 0)),)
+                  const Text('See you tomorrow!', style: TextStyle( fontSize: 16, fontWeight: FontWeight.bold, color: Color.fromARGB(255, 65, 65, 65)),)
                   :
-                  const Text('Log in',style: TextStyle(fontFamily: 'fancy', fontSize: 20, fontWeight: FontWeight.bold, color: Colors.white),),
+                  const Text('Log in!',style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Color.fromARGB(255, 88, 88, 88)),),
+                  ),
                 ),
               ),
               onTap: () async {
@@ -627,7 +637,10 @@ class _HomePageState extends State<HomePage> {
             child: Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              GestureDetector(
+              Stack(
+                clipBehavior: Clip.none,
+                children:[
+                  GestureDetector(
                 onTap: (){
                   Navigator.push(context, MaterialPageRoute(builder: (context) => const referralPage()));
                 },
@@ -638,10 +651,23 @@ class _HomePageState extends State<HomePage> {
                   color: const Color.fromARGB(255, 97, 155, 255),
                   borderRadius: BorderRadius.circular(25),
                 ),
-                child: const Padding(padding: EdgeInsets.all(10), child:Center(
+                child:Center(
                   child: Text('Invite friend and get maximum 80% off!', style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold, color: Colors.white),),
-                ),)
-              ),)
+                ),
+              ),),
+              Positioned(
+                top: -60, // Adjust these to place the image
+                right: 20,
+                child: ClipRRect(// Round the image if needed
+                  child: Image.asset(
+                    'assets/highfive.png', // Path to the image
+                    width: 60,
+                    height: 60,
+                    fit: BoxFit.cover,
+                  ),
+                ),
+              ),
+              ])
             ]),),
           const SizedBox(height: 20),
                     ],

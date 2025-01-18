@@ -324,7 +324,7 @@ class CouponListviewState extends State<CouponListview> with SingleTickerProvide
               });
             },
             child: const Center(
-              child: Text('You have not used any coupon yet'),
+              child: Text('There is no available coupon :(',style: TextStyle(fontWeight: FontWeight.bold,color: Colorsetting.font),),
             ),
             );// Handle empty state
           } else {
@@ -450,7 +450,7 @@ class CouponListviewState extends State<CouponListview> with SingleTickerProvide
           } else if (snapshot.hasError) {
             return Center(child: Text('Error: ${snapshot.error}')); // Handle error if any
           } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-            return const Center(child: Text('You have not used any coupon yet')); // Handle empty state
+            return const Center(child: Text('You have not used any coupon yet',style: TextStyle(fontWeight: FontWeight.bold,color: Colorsetting.font))); // Handle empty state
           } else {
             List<Coupon> expiredCoupons = snapshot.data!;
 
