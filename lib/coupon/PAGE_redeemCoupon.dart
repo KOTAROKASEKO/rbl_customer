@@ -116,6 +116,7 @@ class redeemDetailState extends State<redeemDetail> {
     //coupons/couponId/details
 
     Map<String, dynamic> individualCouponData = {
+      'isForEveryone':false,
       'imageUrl': imageUrl,
       'couponId':couponId,
       'description':'RBL with you',

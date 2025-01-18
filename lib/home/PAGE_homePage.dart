@@ -271,6 +271,8 @@ class _HomePageState extends State<HomePage> {
       body: LiquidPullToRefresh(
         springAnimationDurationInMilliseconds: 300,
           onRefresh: () async{
+          fetchStreakData();
+          fetchEventPosterLinks();
            CurrentUser.initCurrentUser();
             setState(() {
               point = CurrentUser.userPoint??0;
@@ -314,17 +316,20 @@ class _HomePageState extends State<HomePage> {
                       padding: const EdgeInsets.all(10),
                       child: Column(
                         children: [
+
                           const Text('tier point', style: TextStyle(
                             color: Colorsetting.font,
                             fontWeight: FontWeight.bold,
                             fontSize: 12,
                           ),),
+
                           Text('$purchasePoint pt',
                           style: const TextStyle(
                             color: Colorsetting.font,
                             fontWeight: FontWeight.bold,
                             fontSize: 16,
                           ),),
+                          
                         ],
                       ),
                     ),
