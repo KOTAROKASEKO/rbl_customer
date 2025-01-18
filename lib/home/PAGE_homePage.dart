@@ -124,14 +124,14 @@ class _HomePageState extends State<HomePage> {
     return const Icon(Icons.close, color: Colors.red);
   }
 
-  Widget createDayIcon(int day, IconData iconData, Color color) {
+  Widget createDayIcon(int day, Widget icon, Color color) {
     return Row(
       children: [
         const SizedBox(width: 10),
         Column(
           children: [
             Text('${day+1}'),
-            Icon(iconData,color:color),
+            icon,
             Text('${getWhichDay(day+1)}pt'),
           ],
         ),
@@ -147,37 +147,13 @@ class _HomePageState extends State<HomePage> {
     }
 
     for (var i = 0; i < howManyStreaks; i++) {
-    switch (i) {
-      case 0:
-        icons.add(createDayIcon(i, Icons.check_circle_outlined, Colors.green));
-        break;
-      case 1:
-        icons.add(createDayIcon(i, Icons.check_circle_outlined,Colors.green));
-        break;
-      case 2:
-        icons.add(createDayIcon(i, Icons.check_circle_outlined,Colors.green));
-        break;
-      case 3:
-        icons.add(createDayIcon(i, Icons.check_circle_outlined,Colors.green));
-        break;
-      case 4:
-        icons.add(createDayIcon(i, Icons.check_circle_outlined,Colors.green));
-        break;
-      case 5:
-        icons.add(createDayIcon(i, Icons.check_circle_outlined,Colors.green));
-        break;
-      case 6:
-        icons.add(createDayIcon(i, Icons.check_circle_outlined,Colors.green));
-        break;
-      default:
-        break;
+      icons.add(createDayIcon(i, Image.asset('assets/cat.png',width: 35,height: 35,), Colors.green));
     }
-  }
     //show rest of days
 
   if (howManyStreaks < 7) {
     for (var j = 0; j < (7 - howManyStreaks); j++) {
-      icons.add(createDayIcon(j+howManyStreaks ,Icons.ac_unit_rounded,Colors.blue));
+      icons.add(createDayIcon(j+howManyStreaks ,Text('?',style: TextStyle(fontSize: 16,fontWeight: FontWeight.bold),),Colors.blue));
     }
   }
 

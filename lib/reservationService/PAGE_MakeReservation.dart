@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:rbl/Account/userId.dart';
@@ -72,6 +73,7 @@ class _ReservationViewState extends State<ReservationView> {
     'Machine G',//'PRP',
   ];
   
+
   final List<int> _priceList = [
     388,
     388,
@@ -90,9 +92,9 @@ class _ReservationViewState extends State<ReservationView> {
   String _pickedMachine = 'Machine A';
   bool _isLoading = false;            
   int price = 388;                     
-  String shownDetail = 'Hifu is blabla, hifu is amazing treatment. this is because hifu is using natural ingredientes coming from Korea that is known as a huge beauty country.\n getting this treatmnet only once doesn\'t really work. So, we are recomming most of the customers to take more than 3 times to get the best result.';
+  String? shownDetail='';
   ScrollController parentController = ScrollController();
-  
+  String? detailedTreatment;
 
 // Dummy data for demonstration
   final List<String> _bookedSlots = [];
@@ -101,6 +103,7 @@ class _ReservationViewState extends State<ReservationView> {
   void initState() {
     super.initState();
     _fetchReservations(_pickedDate, _pickedMachine);
+    getDetails();
   }
 
   void _fetchReservations(DateTime newDate, String pickedMachine) async {
@@ -148,6 +151,36 @@ class _ReservationViewState extends State<ReservationView> {
   Future<void> checkNotificationPermission() async {
     Firebaseapi().initNotification();
   }
+
+  String? treatmentDetail;
+
+  Future<void> getDetails() async {
+  try {
+    // ignore: unnecessary_null_comparison
+    if (_pickedTreatment == null || _pickedTreatment.trim().isEmpty) {
+      print('Invalid treatment ID');
+      return;
+    }
+    final treatmentId = _pickedTreatment.trim();
+    print('Fetching details for treatment ID: $treatmentId');
+    
+    DocumentSnapshot snapshot = await FirebaseFirestore.instance
+        .collection('treatment')
+        .doc(treatmentId)
+        .get();
+
+    if (snapshot.exists) {
+      treatmentDetail = snapshot['detail'];
+      print('Fetched detail: $treatmentDetail');
+    } else {
+      print('No document found for ID: $treatmentId');
+    }
+  } catch (e) {
+    print('Error fetching the treatment detail: $e');
+  }
+}
+
+
 
   
   @override
@@ -433,7 +466,7 @@ class _ReservationViewState extends State<ReservationView> {
                         ],
                       ),
                       subtitle: Text(
-                        shownDetail,
+                        treatmentDetail??'',
                         style: const TextStyle(
                           fontSize: 15,
                           color: Colorsetting.font,
@@ -443,11 +476,12 @@ class _ReservationViewState extends State<ReservationView> {
                       onTap: () {
                         Navigator.push(
                           context,
-                          MaterialPageRoute(builder: (context) => treatmentDescription(treatment:_pickedTreatment)),
+                          MaterialPageRoute(
+                            builder: (context) => treatmentDescription(treatment: _pickedTreatment),
+                          ),
                         );
                       },
                     ),
-                    
                     const SizedBox(height: 16),
                   ],
                   ),
@@ -746,11 +780,11 @@ ScaffoldMessenger.of(context).showSnackBar(snackBar);
               print(_usedMachine[selectedIndex]);
               setState(() {
                 selectedIndex = _treatment.indexOf(_treatment[index]);
-                shownDetail = _treatmentDetails[selectedIndex];
                 _pickedTreatment = _treatment[index];
                 _pickedMachine = _usedMachine[selectedIndex];
                 price = _priceList[selectedIndex];
               });
+              getDetails();
               _fetchReservations(_pickedDate, _usedMachine[selectedIndex]);
             },
           );
