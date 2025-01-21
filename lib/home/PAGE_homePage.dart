@@ -595,10 +595,9 @@ class _HomePageState extends State<HomePage> {
               ),
             GestureDetector(
               child: Container(
-                
                 decoration: BoxDecoration(
                   color: Dailystreak.didUserLoginTdy ? const Color.fromARGB(255, 225, 225, 225): null,
-                  border: Dailystreak.didUserLoginTdy ? null: Border.all(),
+                  border: Dailystreak.didUserLoginTdy ? null : Border.all(),
                   borderRadius: BorderRadius.circular(30),
                 ),
                 child: Center(
@@ -606,7 +605,7 @@ class _HomePageState extends State<HomePage> {
                   child: Dailystreak.didUserLoginTdy ?
                   const Text('See you tomorrow!', style: TextStyle( fontSize: 16, fontWeight: FontWeight.bold, color: Color.fromARGB(255, 65, 65, 65)),)
                   :
-                  const Text('Log in!',style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Color.fromARGB(255, 88, 88, 88)),),
+                  const Text('Log in!',style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Color.fromARGB(255, 72, 154, 64)),),
                   ),
                 ),
               ),
