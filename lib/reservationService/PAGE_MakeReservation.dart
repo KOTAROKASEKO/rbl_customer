@@ -180,9 +180,6 @@ class _ReservationViewState extends State<ReservationView> {
   }
 }
 
-
-
-  
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -682,6 +679,66 @@ class _ReservationViewState extends State<ReservationView> {
                                         Navigator.pop(context);
                                         await checkNotificationPermission();
                                         //***************** */
+                                        showDialog(
+                                          context: context, // Ensure you have access to the context
+                                          builder: (BuildContext context) {
+                                            return Dialog(
+                                              shape: RoundedRectangleBorder(
+                                                borderRadius: BorderRadius.circular(20),
+                                              ),
+                                              child: Container(
+                                                width: 100,
+                                                height: 200,
+                                                decoration: BoxDecoration(
+                                                  borderRadius: BorderRadius.circular(20),
+                                                  color: Colors.white,
+                                                ),
+                                                child: Column(
+                                                  mainAxisAlignment: MainAxisAlignment.center,
+                                                  children: [
+                                                    SizedBox(height: 10),
+                                                    Text('Succeeded!',style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),),
+                                                    Padding(
+                                                      padding: EdgeInsets.all(10),
+                                                      child: Text(
+                                                        'Now our staff is confirming your reservation! Please wait a moment',
+                                                        style: TextStyle(
+                                                          fontWeight: FontWeight.bold,
+                                                          color: Colorsetting.font,
+                                                        ),
+                                                        textAlign: TextAlign.center,
+                                                        maxLines: 5,
+                                                      ),
+                                                    ),
+                                                    Row(
+                                                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                                                      children: [
+                                                        GestureDetector(
+                                                          onTap: () {
+                                                            Navigator.pop(context); // Close the dialog on 'No'
+                                                          },
+                                                          child: Container(
+                                                            decoration: BoxDecoration(
+                                                              color: Colors.amberAccent,
+                                                              borderRadius: BorderRadius.circular(5),
+                                                            ),
+                                                            padding: EdgeInsets.all(10),
+                                                            child: Text(
+                                                              'Ok',
+                                                              style: TextStyle(color: Colors.black),
+                                                            ),
+                                                          ),
+                                                        ),
+                                                        
+                                                      ],
+                                                    ),
+                                                  ],
+                                                ),
+                                              ),
+                                            );
+                                          },
+                                        );
+
                                         _showSnackBar(context);
                                       },
                                     ),

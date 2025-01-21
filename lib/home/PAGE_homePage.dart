@@ -178,7 +178,7 @@ class _HomePageState extends State<HomePage> {
         givePoint = 30;
       }
       else if(howManyStreaks == 6){
-        givePoint = 100;
+        givePoint = 2000;
       }
       if(!Dailystreak.didUserLoginTdy){
         await Dailystreak.updateDailyStreak(DateTime.now(), howManyStreaks + 1, givePoint);
@@ -316,7 +316,6 @@ class _HomePageState extends State<HomePage> {
                       padding: const EdgeInsets.all(10),
                       child: Column(
                         children: [
-
                           const Text('tier point', style: TextStyle(
                             color: Colorsetting.font,
                             fontWeight: FontWeight.bold,

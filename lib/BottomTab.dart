@@ -147,7 +147,6 @@ void _onItemTapped(int index) {
     });
     tabProviderInstance.changeIndex(index); // Update the Provider state
   } else {
-    // Pop to the first screen if the current tab is tapped again
     _navigatorKeys[index].currentState?.popUntil((route) => route.isFirst);
   }
 }
