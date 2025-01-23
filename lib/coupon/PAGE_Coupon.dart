@@ -94,7 +94,7 @@ class CouponListviewState extends State<CouponListview> with SingleTickerProvide
 
   Color selectedOptionColor = const Color.fromARGB(255, 255, 98, 51);
   Color selectedOptionTextColor = Colors.white;
-  Color unselectedOptionColor = const Color.fromARGB(255, 212, 212, 212);
+  Color backgroundColor = const Color.fromARGB(255, 41, 48, 111);//const Color.fromARGB(255, 32, 30, 79);
 
   
   @override
@@ -191,7 +191,7 @@ class CouponListviewState extends State<CouponListview> with SingleTickerProvide
             width: 200,
             height: 40,
               decoration: BoxDecoration(
-                color: unselectedOptionColor, // Containerの背景色
+                color: selectedOptionColor,
                 borderRadius: BorderRadius.circular(20),
               ),
             child:Padding(
@@ -235,286 +235,328 @@ class CouponListviewState extends State<CouponListview> with SingleTickerProvide
           ),
         
         const SizedBox(height: 20,),
-       Container(
-          padding: const EdgeInsets.all(5),
-          decoration: BoxDecoration(
-            color: const Color.fromARGB(255, 212, 212, 212), // 背景色
-            borderRadius: BorderRadius.circular(30), // 全体の角丸
-          ),
-          child: Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              // "available" ボタン
-              GestureDetector(
-                onTap: () {
-                  setState(() {
-                    showAvaialbleCoupon = true;
-                  });
-                },
-                child: Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-                  decoration: BoxDecoration(
-                    color: showAvaialbleCoupon ? selectedOptionColor : unselectedOptionColor, // 選択状態で色を変える
-                    borderRadius: BorderRadius.circular(20), // 角丸
-                  ),
-                  child: Text(
-                    'Available',
-                    style: TextStyle(
-                      color: showAvaialbleCoupon ? selectedOptionTextColor : selectedOptionColor, // テキスト色
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                ),
-              ),
-              // "past" ボタン
-              GestureDetector(
-                onTap: () {
-                  setState(() {
-                    showAvaialbleCoupon = false;
-                  });
-                },
-                child: Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-                  decoration: BoxDecoration(
-                    color: showAvaialbleCoupon ? unselectedOptionColor: selectedOptionColor, // 選択状態で色を変える
-                    borderRadius: BorderRadius.circular(20), // 角丸
-                  ),
-                  child: Text(
-                    'Past',
-                    style: TextStyle(
-                      color: showAvaialbleCoupon ? selectedOptionColor:selectedOptionTextColor , // テキスト色
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                ),
-              ),
-            ],
-          ),
-        ),
-
-        showAvaialbleCoupon ? Expanded(
+        
+               
+         Expanded(
+          
           flex: 6,
-          child: FutureBuilder<List<Coupon>>(
-        future: _couponsFuture,
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return Center(child: Image.asset('assets/gif/loading.gif')); // Show loading while fetching
-          } else if (snapshot.hasError) {
-            return
-              LiquidPullToRefresh(
-                  springAnimationDurationInMilliseconds: 300,
-                  onRefresh: () async{
-                    _couponsFuture = CouponService.getUserCouponsWithDetails(); // Fetch coupons when the screen is initialized
-                    _ExpiredCouponsFuture = CouponService.getExpiredUserCouponsWithDetails();
-                    setState(() {
-                      _couponsFuture;
-                      _ExpiredCouponsFuture;
-                    });
-                  },
-              child:Center(child: Text('Error: ${snapshot.error}'))); // Handle error if any
-          } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-            return LiquidPullToRefresh(
-                springAnimationDurationInMilliseconds: 300,
-                onRefresh: () async{
-              _couponsFuture = CouponService.getUserCouponsWithDetails(); // Fetch coupons when the screen is initialized
-              _ExpiredCouponsFuture = CouponService.getExpiredUserCouponsWithDetails();
-              setState(() {
-                _couponsFuture;
-                _ExpiredCouponsFuture;
-              });
-            },
-            child: const Center(
-              child: Text('There is no available coupon :(',style: TextStyle(fontWeight: FontWeight.bold,color: Colorsetting.font),),
+          child:Container(
+            decoration:  BoxDecoration(
+              boxShadow: [BoxShadow(
+                color: Colors.grey.withOpacity(0.9), // 陰の色と透明度
+                spreadRadius: 1, // 陰の広がり
+                blurRadius: 3, // 陰のオフセット（x, y）
+              )],
+              color: Color.fromARGB(255, 220, 220, 220),
+              borderRadius: BorderRadius.only(topLeft: Radius.circular(20),topRight: Radius.circular(20)),
             ),
-            );// Handle empty state
-          } else {
-            List<Coupon> coupons = snapshot.data!;
-            return ListView.builder(
-              itemCount: coupons.length,
-              itemBuilder: (context, index) {
-                Coupon coupon = coupons[index];
-                return ListTile(
-                  title:
-                    Padding(
-                      padding: const EdgeInsets.only(top: 20),
-                      child: Container(
-                        child:Column(children: [
-                          Container(
-                            decoration: BoxDecoration(
-                              borderRadius: const BorderRadius.only(topLeft: Radius.circular(6.0), topRight: Radius.circular(6.0)),
-                              boxShadow: [
-                              BoxShadow(
-                                color: Colors.grey.withOpacity(0.9), // 陰の色と透明度
-                                spreadRadius: 1, // 陰の広がり
-                                blurRadius: 1, // 陰のぼかし半径
-                                offset: const Offset(0, 2), // 陰のオフセット（x, y）
-                              ),]
-                              ),
-                            child: FittedBox(
-                              fit: BoxFit.cover, // Or BoxFit.contain based on your preference
-                              child: Image.network(coupon.imageURL), // Your image asset
-                            ),
-                          ),
-
-                          Container(
-                          height: 70,
-                          decoration: BoxDecoration(
-                            color: Colors.white, // Containerの背景色
-                            boxShadow: [
-                              BoxShadow(
-                                color: Colors.grey.withOpacity(0.9), // 陰の色と透明度
-                                spreadRadius: 1, // 陰の広がり
-                                blurRadius: 1, // 陰のぼかし半径
-                                offset: const Offset(0, 2), // 陰のオフセット（x, y）
-                              ),
-                            ],
-                      borderRadius: const BorderRadius.only(bottomLeft: Radius.circular(6.0), bottomRight: Radius.circular(6.0)),
-                          ),
-                          child: Padding(padding: const EdgeInsets.all(4.0),
-                          child: Column(
-                            children: [
-                              Row(
-                                children: [
-                                  Text(coupon.discountType == 'subtraction'
-                                      ? 'RM ${coupon.discountAmount}'
-                                      : '${coupon.discountAmount} %',
-                                      style: const TextStyle( fontSize: 15.0),),
-                                  const Text(' discount',style: TextStyle(fontSize: 15,color: Color.fromARGB(255, 103, 103, 103)),)
-                                ],
-                              ),
-                              
-                              const SizedBox(height: 10,),
-                              Row(
-                                mainAxisAlignment: MainAxisAlignment.start,
-                                children: [Text('expires at:  ${DateFormat('yyyy-MM-dd').format(coupon.expiryDate)}',style: const TextStyle(fontFamily: 'neat', fontSize: 10),)],
-                              ),
-                            ],
-                          ),
-                        )
-                      ),
-                        ],),
-                      ),
-                    ),
-                  onTap: () {
-                    // Handle tap (e.g., show more details)
-
-                    showModalBottomSheet<void>(
-                      context: context,
-                      builder: (BuildContext context) {
-                        return SizedBox(
-                          child: Center(
-                            child: Column(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              mainAxisSize: MainAxisSize.min,
-                              children: <Widget>[
-                                const Text('show QR code to our staff'),
-                                QrImageView(
-                                  data: '${coupon.id}_${AccountId.userId}',
-                                  version: QrVersions.auto,
-                                  size: 200.0,
-                                  gapless: false, // ギャップの無い描画
-                                  errorStateBuilder: (cxt, err) {
-                                    return const Center(
-                                      child: Text(
-                                        "Error generating QR code",
-                                        textAlign: TextAlign.center,
+            
+              child: Stack(
+                clipBehavior: Clip.none,
+                children:[
+                showAvaialbleCoupon? 
+                FutureBuilder<List<Coupon>>(
+                  future: _couponsFuture,
+                  builder: (context, snapshot) {
+                    if (snapshot.connectionState == ConnectionState.waiting) {
+                      return Center(child: Image.asset('assets/gif/loading.gif')); // Show loading while fetching
+                    } else if (snapshot.hasError) {
+                      return
+                        LiquidPullToRefresh(
+                            springAnimationDurationInMilliseconds: 300,
+                            onRefresh: () async{
+                              _couponsFuture = CouponService.getUserCouponsWithDetails(); // Fetch coupons when the screen is initialized
+                              _ExpiredCouponsFuture = CouponService.getExpiredUserCouponsWithDetails();
+                              setState(() {
+                                _couponsFuture;
+                                _ExpiredCouponsFuture;
+                              });
+                            },
+                        child:Center(child: Text('Error: ${snapshot.error}'))); // Handle error if any
+                    } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+                      return LiquidPullToRefresh(
+                          springAnimationDurationInMilliseconds: 300,
+                          onRefresh: () async{
+                          _couponsFuture = CouponService.getUserCouponsWithDetails(); // Fetch coupons when the screen is initialized
+                          _ExpiredCouponsFuture = CouponService.getExpiredUserCouponsWithDetails();
+                          setState(() {
+                            _couponsFuture;
+                            _ExpiredCouponsFuture;
+                          });
+                        },
+                        child: const Center(
+                          child: Text('There is no available coupon :(',style: TextStyle(fontWeight: FontWeight.bold,color: Colorsetting.font),),
+                        ),
+                      );// Handle empty state
+                    } else {
+                      List<Coupon> coupons = snapshot.data!;
+                      return ListView.builder(
+                        physics: BouncingScrollPhysics(),
+                        itemCount: coupons.length,
+                        itemBuilder: (context, index) {
+                          Coupon coupon = coupons[index];
+                          return ListTile(
+                            title:
+                              Padding(
+                                padding: const EdgeInsets.only(top: 20),
+                                child: Column(children: [
+                                  Container(
+                                    decoration: BoxDecoration(
+                                      borderRadius: const BorderRadius.only(topLeft: Radius.circular(6.0), topRight: Radius.circular(6.0)),
+                                      boxShadow: [
+                                      BoxShadow(
+                                        color: Colors.grey,
+                                        spreadRadius: 1, // 陰の広がり
+                                        blurRadius: 1, // 陰のぼかし半径
+                                        offset: const Offset(0, 2), // 陰のオフセット（x, y）
+                                      ),]
                                       ),
-                                    );
-                                  },
+                                    child: FittedBox(
+                                      fit: BoxFit.cover, // Or BoxFit.contain based on your preference
+                                      child: Image.network(coupon.imageURL), // Your image asset
+                                    ),
+                                  ),
+                                
+                                  Container(
+                                  decoration: BoxDecoration(
+                                    color: Colors.white, // Containerの背景色
+                                    boxShadow: [
+                                      BoxShadow(
+                                        color: Colors.grey.withOpacity(0.9), // 陰の色と透明度
+                                        spreadRadius: 1, // 陰の広がり
+                                        blurRadius: 1, // 陰のぼかし半径
+                                        offset: const Offset(0, 2), // 陰のオフセット（x, y）
+                                      ),
+                                    ],
+                                  borderRadius: const BorderRadius.only(bottomLeft: Radius.circular(6.0), bottomRight: Radius.circular(6.0)),
+                                      ),
+                                      child: Padding(padding: const EdgeInsets.all(4.0),
+                                      child: Column(
+                                        children: [
+                                          ListTile(
+                                            title: Row(
+                                              children: [
+                                                Text(coupon.discountType == 'subtraction'
+                                                    ? 'RM ${coupon.discountAmount} '
+                                                    : '${coupon.discountAmount} % ',
+                                                    style: const TextStyle(fontSize: 18,fontWeight: FontWeight.bold,color: Colorsetting.font),),
+                                                const Text('Discount',style: TextStyle(fontSize: 18,fontWeight: FontWeight.bold,color: Colorsetting.font),)
+                                              ],
+                                            ),
+                                            subtitle: Text(coupon.description, style: TextStyle(fontSize: 15,fontWeight: FontWeight.bold,color: Colorsetting.font),maxLines: 2,),
+                                            trailing:Text('Until : ${DateFormat('MM-dd').format(coupon.expiryDate)}', style: const TextStyle(fontWeight: FontWeight.bold,color: Colorsetting.font, fontSize: 15),),
+                                          ),
+                                          const SizedBox(height: 10,),
+                                        ],
+                                      ),
+                                    )
+                                  ),
+                                ],),
+                              ),
+                            onTap: () {
+                              // Handle tap (e.g., show more details)
+
+                              showModalBottomSheet<void>(
+                                context: context,
+                                builder: (BuildContext context) {
+                                  return SizedBox(
+                                    child: Center(
+                                      child: Column(
+                                        mainAxisAlignment: MainAxisAlignment.center,
+                                        mainAxisSize: MainAxisSize.min,
+                                        children: <Widget>[
+                                          const Text('show QR code to our staff'),
+                                          QrImageView(
+                                            data: '${coupon.id}_${AccountId.userId}',
+                                            version: QrVersions.auto,
+                                            size: 200.0,
+                                            gapless: false, // ギャップの無い描画
+                                            errorStateBuilder: (cxt, err) {
+                                              return const Center(
+                                                child: Text(
+                                                  "Error generating QR code",
+                                                  textAlign: TextAlign.center,
+                                                ),
+                                              );
+                                            },
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  );
+                                },
+                              );
+
+                              print('Tapped on coupon: ${coupon.id}');
+                            },
+                          );
+                        },
+                      );
+                    }
+                  },
+                )
+                :
+                FutureBuilder<List<Coupon>>(
+
+                future: _ExpiredCouponsFuture,
+                builder: (context, snapshot) {
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return Center(child: Image.asset('assets/gif/loading.gif'));
+                  } else if (snapshot.hasError) {
+                    return Center(child: Text('Error: ${snapshot.error}')); // Handle error if any
+                  } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+                    return const Center(child: Text('You have not used any coupon yet',style: TextStyle(fontWeight: FontWeight.bold,color: Colorsetting.font))); // Handle empty state
+                  } else {
+                    List<Coupon> expiredCoupons = snapshot.data!;
+
+                    return ListView.builder(
+                      itemCount: expiredCoupons.length,
+                      itemBuilder: (context, index) {
+                        Coupon coupon = expiredCoupons[index];
+
+                        return ListTile(
+                          title:
+                            Container(
+                            decoration: BoxDecoration(
+                              color: Colors.white, // Containerの背景色
+                              boxShadow: [
+                                BoxShadow(
+                                  color: Colors.grey.withOpacity(0.9), // 陰の色と透明度
+                                  spreadRadius: 5, // 陰の広がり
+                                  blurRadius: 7, // 陰のぼかし半径
+                                  offset: const Offset(3, 6), // 陰のオフセット（x, y）
+                                ),
+                              ],
+                              borderRadius: BorderRadius.circular(6.0),
+                            ),
+                            child: Padding(padding: const EdgeInsets.all(10.0),
+                            child: Column(
+                              children: [
+                                Row(
+                                  children: [
+                                    Text(coupon.discountType == 'subtraction'
+                                        ? 'RM ${coupon.discountAmount}'
+                                        : '${coupon.discountAmount} %',
+                                        style: const TextStyle(fontFamily: 'juliousSans', fontSize: 20.0),),
+                                    const Text(' discount',style: TextStyle(fontSize: 20,fontFamily: 'juliousSans', color: Color.fromARGB(255, 255, 191, 0)),)
+                                  ],
+                                ),
+                                Row(
+                                  mainAxisAlignment: MainAxisAlignment.start,
+                                  children: [Text(coupon.description, style: const TextStyle(fontFamily: 'fancy',),
+                                  maxLines: 2,)],
+
+                                ),
+                                const SizedBox(height: 10,),
+                                Row(
+                                  mainAxisAlignment: MainAxisAlignment.start,
+                                  children: [Text('expired at:  ${coupon.expiryDate}',style: const TextStyle(fontFamily: 'neat', fontSize: 10),)],
                                 ),
                               ],
                             ),
-                          ),
+                                )
+                              ),
+                          onTap: () {
+                            print('Tapped on coupon: ${coupon.id}');
+                          },
                         );
                       },
                     );
+                  }
+                },
+              ),
+                
+              Positioned(
+                
+              left: 0,
+              right: 0,
+              top: 10,
 
-                    print('Tapped on coupon: ${coupon.id}');
-                  },
-                );
-              },
-            );
-          }
-        },
-      ),
-        )
-        :
-        Expanded(
-          flex:6,
-          child: FutureBuilder<List<Coupon>>(
-
-        future: _ExpiredCouponsFuture,
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return Center(child: Image.asset('assets/gif/loading.gif')); // Show loading while fetching
-          } else if (snapshot.hasError) {
-            return Center(child: Text('Error: ${snapshot.error}')); // Handle error if any
-          } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-            return const Center(child: Text('You have not used any coupon yet',style: TextStyle(fontWeight: FontWeight.bold,color: Colorsetting.font))); // Handle empty state
-          } else {
-            List<Coupon> expiredCoupons = snapshot.data!;
-
-            return ListView.builder(
-              itemCount: expiredCoupons.length,
-              itemBuilder: (context, index) {
-                Coupon coupon = expiredCoupons[index];
-
-                return ListTile(
-                  title:
-                    Container(
-                    decoration: BoxDecoration(
-                      color: Colors.white, // Containerの背景色
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.grey.withOpacity(0.9), // 陰の色と透明度
-                          spreadRadius: 5, // 陰の広がり
-                          blurRadius: 7, // 陰のぼかし半径
-                          offset: const Offset(3, 6), // 陰のオフセット（x, y）
+              child: Align(
+                alignment: Alignment.center,
+                child: Container(
+                  padding: const EdgeInsets.all(5),
+                  decoration: BoxDecoration(
+                    color: backgroundColor, // 背景色
+                    borderRadius: BorderRadius.circular(30),
+                  ),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      // "available" ボタン
+                      GestureDetector(
+                        onTap: () {
+                          setState(() {
+                            showAvaialbleCoupon = true;
+                          });
+                        },
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+                          decoration: BoxDecoration(
+                            color: showAvaialbleCoupon ? selectedOptionColor : backgroundColor, // 選択状態で色を変える
+                            borderRadius: BorderRadius.circular(20),
+                          ),
+                          child: Text(
+                            'Available',
+                            style: TextStyle(
+                              color: showAvaialbleCoupon ? selectedOptionTextColor : selectedOptionColor, // テキスト色
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
                         ),
-                      ],
-                      borderRadius: BorderRadius.circular(6.0),
-                    ),
-                    child: Padding(padding: const EdgeInsets.all(10.0),
-                     child: Column(
-                      children: [
-                        Row(
-                          children: [
-                            Text(coupon.discountType == 'subtraction'
-                                ? 'RM ${coupon.discountAmount}'
-                                : '${coupon.discountAmount} %',
-                                style: const TextStyle(fontFamily: 'juliousSans', fontSize: 20.0),),
-                            const Text(' discount',style: TextStyle(fontSize: 20,fontFamily: 'juliousSans', color: Color.fromARGB(255, 255, 191, 0)),)
-                          ],
-                        ),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.start,
-                          children: [Text(coupon.description, style: const TextStyle(fontFamily: 'fancy',),
-                          maxLines: 2,)],
-
-                        ),
-                        const SizedBox(height: 10,),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.start,
-                          children: [Text('expired at:  ${coupon.expiryDate}',style: const TextStyle(fontFamily: 'neat', fontSize: 10),)],
-                        ),
-                      ],
-                    ),
-                        )
                       ),
-                  onTap: () {
-                    print('Tapped on coupon: ${coupon.id}');
-                  },
-                );
-              },
-            );
-          }
-        },
-      ),
-          ),
-      ],))
-    );
-  }
-}
+                      // "past" ボタン
+                      GestureDetector(
+                        onTap: () {
+                          setState(() {
+                            showAvaialbleCoupon = false;
+                          });
+                        },
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+                          decoration: BoxDecoration(
+                            color: showAvaialbleCoupon ? backgroundColor: selectedOptionColor, // 選択状態で色を変える
+                            borderRadius: BorderRadius.circular(20), // 角丸
+                          ),
+                          child: Text(
+                            'Past',
+                            style: TextStyle(
+                              color: showAvaialbleCoupon ? selectedOptionColor:selectedOptionTextColor , // テキスト色
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+                    ),
+              
+              Positioned(
+                child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                Container(
+                  width: 4,
+                  height: 12,
+                  color: Colors.brown,
+                ),
+                Container(
+                  width: 4,
+                  height: 12,
+                  color: Colors.brown,
+                )
+              ],))      
+                    ],
+                  ),
+                
+              )            
+            ),
+         ],))
+        ); 
+      }
+    }
 
 
 class UncontainedLayoutCard extends StatelessWidget {
