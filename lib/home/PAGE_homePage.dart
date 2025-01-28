@@ -89,6 +89,8 @@ class _HomePageState extends State<HomePage> {
   }
 
   int purchasePoint = 0;
+  
+  bool isUpdatingPoint = false;
 
   Future<int> fetchUserData() async{
     try{
@@ -613,13 +615,16 @@ class _HomePageState extends State<HomePage> {
                 ),
               ),
               onTap: () async {
+              isUpdatingPoint = true;
                calculateStreakPoint();
+               showLoading();
                await Dailystreak.fetchCurrentStreaks();
                setState(() {
                   isLoading = false;
                   howManyStreaks = Dailystreak.getshownStreakNum();
                   point = CurrentUser.userPoint??0;
                 });
+                isUpdatingPoint = false;
               },
             ),
             
@@ -686,5 +691,19 @@ class _HomePageState extends State<HomePage> {
       ),
       )
     );
+  }
+  Future<dynamic> showLoading(){
+    return showDialog(context: context, builder: (context){
+      return Dialog(
+        child: Container(
+          width: 200,
+          height: 400,
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(20),
+          ),
+          
+        ),
+      );
+    });
   }
 }

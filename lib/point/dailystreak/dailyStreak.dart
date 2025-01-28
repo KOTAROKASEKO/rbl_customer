@@ -26,7 +26,6 @@ class Dailystreak {
       if (userDoc.exists) {
         
         lastLogInDate = (userDoc['lastLogInDate'] as Timestamp).toDate();
-
         streakNum = userDoc['streakNum'];
         
           // Check if last login was yesterday
@@ -61,11 +60,11 @@ class Dailystreak {
 
     print('last login date is $lastLogInDate');
 
-    final now = DateTime.now();
-    final yesterday = now.subtract(const Duration(days: 1));
+    DateTime now = DateTime.now();
+    DateTime yesterday = now.subtract(const Duration(days: 1));
 
     // Extract only the date portion for comparison
-    DateTime lastLogin = DateTime(lastLogInDate.year, lastLogInDate.month, lastLogInDate.day); // Actual login date
+    DateTime lastLogin = DateTime(lastLogInDate.year, lastLogInDate.month, lastLogInDate.day); // login date
     DateTime yesterdayOnly = DateTime(yesterday.year, yesterday.month, yesterday.day); // Yesterday date
     DateTime today = DateTime(now.year, now.month, now.day); // Today's date
 
