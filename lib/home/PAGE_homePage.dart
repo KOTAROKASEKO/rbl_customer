@@ -1,8 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:liquid_pull_to_refresh/liquid_pull_to_refresh.dart';
-import 'package:provider/provider.dart';
 import 'package:qr_flutter/qr_flutter.dart';
 import 'package:rbl/Account/CurrentUserInstance.dart';
 import 'package:rbl/Account/userId.dart';
@@ -10,7 +8,6 @@ import 'package:rbl/Setting/ColorSetting.dart';
 import 'package:rbl/event/PAGE_eventDetail.dart';
 import 'package:rbl/home/MODELReservation.dart';
 import 'package:rbl/home/PAGE_tierGuide.dart';
-import 'package:rbl/home/searchModel.dart';
 import 'package:rbl/point/dailystreak/dailyStreak.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:rbl/referralPage.dart/referralPage.dart';
@@ -25,12 +22,21 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
 
-  int howManyStreaks = Dailystreak.howManyStreaks;
+  int howManyStreaks = Dailystreak.getshownStreakNum();
   List<Widget> icons = [];
   bool? tdyLoggedIn=Dailystreak.didUserLoginTdy;
   bool isLoading = true;
   int point  = 0;
   String? tier;
+  List<int> givePointList = [
+      10,  //1st day
+      10,  //2nd day
+      10,  //3
+      20,  //4
+      10,  //5
+      30,  //6
+      2000,//7th day
+    ];
 
   final List<Reservation> reservations = [];
   ScrollController parentController = ScrollController();
@@ -39,14 +45,21 @@ class _HomePageState extends State<HomePage> {
   List <String> titles = [];
   List <String> ids = [];
   int nextPoint = 0;
-  List<String> tiers = ['snake','crocodile','tiger','dragon'];
+
+  List<String> tiers = [
+    'snake',
+    'crocodile',
+    'tiger',
+    'dragon'
+    ];
 
   @override
   void initState() {
     super.initState();
+    //for streak
     fetchStreakData();
+    //for event
     fetchEventPosterLinks();
-    Future.microtask(() => Provider.of<ReservationFilterProvider>(context, listen: false).loadPreference());
   }
 
   Future<void> fetchEventPosterLinks() async {
@@ -81,11 +94,13 @@ class _HomePageState extends State<HomePage> {
     try{
       FirebaseFirestore instance = FirebaseFirestore.instance;
       var userDoc = await instance.collection('userData').doc(AccountId.userId).get();
+
       if(userDoc.exists){
         setState(() {
           purchasePoint = userDoc['purchasePoint']??0;
         });
         return purchasePoint;
+
       }else{
         print('doc not found');
         return 0;
@@ -97,27 +112,18 @@ class _HomePageState extends State<HomePage> {
   }
 
   Future<void> fetchStreakData() async {
+    
     await Dailystreak.fetchCurrentStreaks();
     await fetchUserData();
     setState(() {
       isLoading = false;
-      howManyStreaks = Dailystreak.howManyStreaks;
+      howManyStreaks = Dailystreak.getshownStreakNum();
       point = CurrentUser.userPoint??0;
     });
   }
 
   int getWhichDay(int day){
-    switch(day){
-      case 1||2||3||5:
-        return 10;
-      case 4:
-        return 20;
-      case 6:
-        return 30;
-      case 7:
-        return 2000;
-      default : return 0;
-    }
+    return givePointList[day];
   }
 
   Widget getNotLoggedInIcon() {
@@ -132,7 +138,7 @@ class _HomePageState extends State<HomePage> {
           children: [
             Text('${day+1}',style: TextStyle(fontWeight: FontWeight.bold,color: Colorsetting.font),),
             icon,
-            Text('${getWhichDay(day+1)}pt',style: TextStyle(fontWeight: FontWeight.bold,color: Colorsetting.font)),
+            Text('${getWhichDay(day)}pt',style: TextStyle(fontWeight: FontWeight.bold,color: Colorsetting.font)),
           ],
         ),
       ],
@@ -140,19 +146,15 @@ class _HomePageState extends State<HomePage> {
   }
 
   Widget showCurrentProgress() {
+    print('howmanyStreaks ==== $howManyStreaks');
     icons.clear();
-    if(howManyStreaks >= 7){
-      Dailystreak.resetDailyStreak();
-      howManyStreaks=0;
-    }
-
     for (var i = 0; i < howManyStreaks; i++) {
       icons.add(createDayIcon(i, Image.asset('assets/cat.png',width: 35,height: 35,), Colors.green));
     }
     //show rest of days
 
   if (howManyStreaks < 7) {
-    for (var j = 0; j < (7 - howManyStreaks); j++) {
+    for (var j = 0; j < 7 - howManyStreaks; j++) {
       icons.add(createDayIcon(j+howManyStreaks ,Text('?',style: TextStyle(fontSize: 16,fontWeight: FontWeight.bold),),Colors.blue));
     }
   }
@@ -164,32 +166,31 @@ class _HomePageState extends State<HomePage> {
   }
 
   void calculateStreakPoint() async{
-    var givePoint = 0;
-    if(kDebugMode){
-      print('howManyStreaks: $howManyStreaks');
-    }
-      if(howManyStreaks == 0||howManyStreaks == 1 || howManyStreaks == 2 || howManyStreaks == 4){
-        givePoint = 10;
-      } 
-      else if(howManyStreaks == 3){
-        givePoint = 20;
-      } 
-      else if( howManyStreaks == 5){
-        givePoint = 30;
-      }
-      else if(howManyStreaks == 6){
-        givePoint = 2000;
-      }
-      if(!Dailystreak.didUserLoginTdy){
-        await Dailystreak.updateDailyStreak(DateTime.now(), howManyStreaks + 1, givePoint);
+
+    int givePoint = givePointList[howManyStreaks % 7];
+
+    if(Dailystreak.getLastLogin()=='yesterday'){
+
+        await Dailystreak.increaseDailyStreak(DateTime.now(),givePoint);
+
         await CurrentUser.initCurrentUser();
 
         setState(() {
-        howManyStreaks = howManyStreaks + 1;
+        howManyStreaks = Dailystreak.getshownStreakNum();
         point = CurrentUser.userPoint??0;
         tdyLoggedIn = Dailystreak.didUserLoginTdy;
       });
-      }
+    }else if(Dailystreak.getLastLogin()=='2 days ago or more'){
+
+      await Dailystreak.resetDailyStreak();
+      await Dailystreak.increaseDailyStreak(DateTime.now(), givePoint);
+      await CurrentUser.initCurrentUser();
+      setState(() {
+        howManyStreaks = Dailystreak.getshownStreakNum();
+        point = CurrentUser.userPoint??0;
+        tdyLoggedIn = Dailystreak.didUserLoginTdy;
+      });
+    }
   }
 
   Widget getTier(){
@@ -291,7 +292,9 @@ class _HomePageState extends State<HomePage> {
             children: [
           GestureDetector(
               onTap: () {
-                Navigator.push(context, MaterialPageRoute(builder: (context){
+                Navigator.push(
+                  context, MaterialPageRoute(
+                  builder: (context){
                   return PageTierGuide(userTier: tier!,purchasePoint: purchasePoint, nextPoint: nextPoint, tiers:tiers,);
                 }));
               },
@@ -611,6 +614,12 @@ class _HomePageState extends State<HomePage> {
               ),
               onTap: () async {
                calculateStreakPoint();
+               await Dailystreak.fetchCurrentStreaks();
+               setState(() {
+                  isLoading = false;
+                  howManyStreaks = Dailystreak.getshownStreakNum();
+                  point = CurrentUser.userPoint??0;
+                });
               },
             ),
             

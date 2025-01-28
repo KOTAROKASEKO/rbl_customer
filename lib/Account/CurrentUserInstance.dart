@@ -12,7 +12,9 @@ class CurrentUser{
   //===================================
   static Future<void> initCurrentUser() async {
     try{
+      print('==============================');
       print('MY DATA IS INITIALISING...');
+      
       String? userName;
       int? phoneNum;
       String? gender;

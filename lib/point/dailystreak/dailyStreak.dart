@@ -5,96 +5,97 @@ import 'package:rbl/Account/userId.dart';
 class Dailystreak {
   static List<DateTime> streaks = [];
   static final FirebaseFirestore _firestore = FirebaseFirestore.instance;
-  static int howManyStreaks = 0;
+  static int streakNum=0;
   static DateTime lastLogInDate = DateTime.now(); // Default value until fetched
   static bool didUserLoginTdy = false;
-  
-  static bool needsReset = false;
+
+  static int getshownStreakNum(){
+
+    //Logic to remain showing 7 cats if the user logged in 7th day
+    if(didUserLoginTdy && streakNum % 7 == 0 && streakNum != 0){
+      return 7;
+    }else{
+      return streakNum % 7;
+    }
+  }
 
   // Fetch the current streaks from Firestore and update data within the app
   static Future<void> fetchCurrentStreaks() async {
     try {
-      final now = DateTime.now();
-      DateTime(now.year, now.month, now.day).subtract(const Duration(days: 1));
-
-      DocumentSnapshot? userDoc =
-          await _firestore.collection('loginStreaks').doc(AccountId.userId).get();
+      DocumentSnapshot? userDoc = await _firestore.collection('loginStreaks').doc(AccountId.userId).get();
       if (userDoc.exists) {
-        final Timestamp? timestamp = userDoc['lastLogInDate'];
-        if (timestamp != null) {
-          lastLogInDate = timestamp.toDate();
-          
-          // Check if last login was yesterday
-          if (didYesterdayLogin(lastLogInDate)) {
-            howManyStreaks += 1;
-            didUserLoginTdy = false; // User hasn't logged in today yet
-          } else if (didTodayLogin(lastLogInDate)) {
-            didUserLoginTdy = true; // User already logged in today
-          } else {
-            // If last login is older than yesterday
-            needsReset = true;
-            await resetDailyStreak();
-          }
-        } else {
-          print('lastLogInDate is null');
-          lastLogInDate = DateTime.now();
-        }
+        
+        lastLogInDate = (userDoc['lastLogInDate'] as Timestamp).toDate();
 
-        howManyStreaks = userDoc['streakNum'] ?? 0;
+        streakNum = userDoc['streakNum'];
+        
+          // Check if last login was yesterday
+      if (getLastLogin()=='today') {
+
+        print("User logged in today.");
+        didUserLoginTdy = true;
+
+        //If yesterday's login is 7th day, reset it to zero
+      } else if (getLastLogin()=='yesterday') {
+
+        print('user logged in yesterday');
+        didUserLoginTdy = false;
+
+      }else if(getLastLogin()=='2 days ago or more'){
+        //The user didn't login either yesterday or today(more than 2days ago). just reset.
+
+        print('user logged in 2 days ago or more'); 
+        await resetDailyStreak();
+        didUserLoginTdy = false;
+      }
       } else {
         lastLogInDate = DateTime.now();
-        howManyStreaks = 0;
+        streakNum = 0;
       }
     } catch (e) {
       print("Error fetching streaks: $e");
     }
   }
 
-  static bool didYesterdayLogin(DateTime loginDate) {
+  static String getLastLogin() {
+
+    print('last login date is $lastLogInDate');
+
     final now = DateTime.now();
     final yesterday = now.subtract(const Duration(days: 1));
 
     // Extract only the date portion for comparison
-    DateTime loginDateOnly = DateTime(loginDate.year, loginDate.month, loginDate.day);
-    DateTime yesterdayOnly = DateTime(yesterday.year, yesterday.month, yesterday.day);
+    DateTime lastLogin = DateTime(lastLogInDate.year, lastLogInDate.month, lastLogInDate.day); // Actual login date
+    DateTime yesterdayOnly = DateTime(yesterday.year, yesterday.month, yesterday.day); // Yesterday date
+    DateTime today = DateTime(now.year, now.month, now.day); // Today's date
 
-    return loginDateOnly == yesterdayOnly;
-  }
-
-  static bool didTodayLogin(DateTime loginDate) {
-    final now = DateTime.now();
-
-    // Extract only the date portion for comparison
-    DateTime loginDateOnly = DateTime(loginDate.year, loginDate.month, loginDate.day);
-    DateTime todayOnly = DateTime(now.year, now.month, now.day);
-
-    return loginDateOnly == todayOnly;
+    if(lastLogin == yesterdayOnly){
+      return'yesterday';
+    }else if(lastLogin == today){
+      return 'today';
+    }else{
+      return '2 days ago or more';
+    }
   }
 
   // Update the streak when the user taps
-  static Future<void> updateDailyStreak(DateTime tappedTime, int streakNum, int givenPoint) async {
-    print('current point: ${CurrentUser.userPoint}');
-    print('it shold be ${CurrentUser.userPoint??0 + givenPoint}');
-    print('givenpoint: $givenPoint');
-    try {
-      if (needsReset || howManyStreaks >= 7) {
-        print('Resetting streak due to conditions.');
-        await resetDailyStreak();
-      }
+  static Future<void> increaseDailyStreak(DateTime tappedTime, int givenPoint) async {
 
+    try {
       await _firestore.collection('loginStreaks').doc(AccountId.userId).set({
+
         'lastLogInDate': DateTime.now(),
-        'streakNum': streakNum,
+        'streakNum': streakNum + 1,
+
       }, SetOptions(merge: true));
 
       await _firestore.collection('userData').doc(AccountId.userId).set({
+
         'point': (CurrentUser.userPoint??0) + givenPoint,
+
       }, SetOptions(merge: true));
 
       didUserLoginTdy = true;
-      print('the result will be ${CurrentUser.userPoint = givenPoint+CurrentUser.userPoint!}');
-      CurrentUser.userPoint = givenPoint+CurrentUser.userPoint!;
-      print('point : ${CurrentUser.userPoint}');
     } catch (e) {
       print("Error updating streak: $e");
     }
@@ -106,11 +107,14 @@ class Dailystreak {
         'lastLogInDate': DateTime.now(),
         'streakNum': 0,
       }, SetOptions(merge: true));
-      howManyStreaks = 0;
+
+      streakNum = 0;
       didUserLoginTdy = false;
+
       print("Streak has been reset.");
     } catch (e) {
       print("Error resetting streak: $e");
     }
   }
 }
+
