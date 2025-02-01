@@ -108,6 +108,8 @@ flutter:
     - assets/rblmalaysia-firebase-adminsdk-lxp4c-ef90dcc10a.json
     - assets/cat.png
     - assets/highfive.png
+    - assets/hungry_cat.png
+    - assets/last_cat.png
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/to/resolution-aware-images

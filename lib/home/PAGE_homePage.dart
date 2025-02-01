@@ -11,7 +11,6 @@ import 'package:rbl/home/PAGE_tierGuide.dart';
 import 'package:rbl/point/dailystreak/dailyStreak.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:rbl/referralPage.dart/referralPage.dart';
-
 import 'PointGuide.dart';
 
 class HomePage extends StatefulWidget {
@@ -31,10 +30,10 @@ class _HomePageState extends State<HomePage> {
   List<int> givePointList = [
       10,  //1st day
       10,  //2nd day
-      10,  //3
-      20,  //4
-      10,  //5
-      30,  //6
+      10,  //3rd day
+      20,  //4th day
+      10,  //5th day 
+      30,  //6th day
       2000,//7th day
     ];
 
@@ -151,13 +150,21 @@ class _HomePageState extends State<HomePage> {
     print('howmanyStreaks ==== $howManyStreaks');
     icons.clear();
     for (var i = 0; i < howManyStreaks; i++) {
-      icons.add(createDayIcon(i, Image.asset('assets/cat.png',width: 35,height: 35,), Colors.green));
+      if(i == 6){
+        icons.add(createDayIcon(i,Image.asset('assets/last_cat.png',width: 35,height: 35,),Colors.blue));
+      }else{
+        icons.add(createDayIcon(i, Image.asset('assets/cat.png',width: 35,height: 35,), Colors.green));
+      }
     }
     //show rest of days
 
   if (howManyStreaks < 7) {
     for (var j = 0; j < 7 - howManyStreaks; j++) {
-      icons.add(createDayIcon(j+howManyStreaks ,Text('?',style: TextStyle(fontSize: 16,fontWeight: FontWeight.bold),),Colors.blue));
+      
+      
+        
+        icons.add(createDayIcon(j+howManyStreaks ,Image.asset('assets/hungry_cat.png',width: 35,height: 35,),Colors.blue));
+      
     }
   }
 
@@ -467,8 +474,8 @@ class _HomePageState extends State<HomePage> {
             decoration: BoxDecoration(
               color: const Color.fromARGB(255, 255, 255, 255),
               borderRadius: BorderRadius.circular(20),
-              boxShadow: [BoxShadow(
-                color: const Color.fromARGB(255, 214, 214, 214),
+              boxShadow: const [BoxShadow(
+                color: Color.fromARGB(255, 214, 214, 214),
                 spreadRadius: 4.0,
                 blurRadius: 7.0,
                 offset: Offset(1, 1)
@@ -692,6 +699,7 @@ class _HomePageState extends State<HomePage> {
       )
     );
   }
+  
   Future<dynamic> showLoading(){
     return showDialog(context: context, builder: (context){
       return Dialog(
@@ -701,7 +709,6 @@ class _HomePageState extends State<HomePage> {
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(20),
           ),
-          
         ),
       );
     });
