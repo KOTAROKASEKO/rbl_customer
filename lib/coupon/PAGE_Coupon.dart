@@ -285,7 +285,7 @@ class CouponListviewState extends State<CouponListview> with SingleTickerProvide
                           });
                         },
                         child: const Center(
-                          child: Text('There is no available coupon :(',style: TextStyle(fontWeight: FontWeight.bold,color: Colorsetting.font),),
+                          child: Text('No coupon :(',style: TextStyle(fontWeight: FontWeight.bold,color: Colorsetting.font),),
                         ),
                       );// Handle empty state
                     } else {

@@ -174,81 +174,58 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-  void calculateStreakPoint() async{
+  Future<void> calculateStreakPoint() async{
 
     int givePoint = givePointList[howManyStreaks % 7];
 
     if(Dailystreak.getLastLogin()=='yesterday'){
 
-        await Dailystreak.increaseDailyStreak(DateTime.now(),givePoint);
+      await Dailystreak.increaseDailyStreak(DateTime.now(),givePoint);
+      await CurrentUser.initCurrentUser();
 
-        await CurrentUser.initCurrentUser();
-
-        setState(() {
-        howManyStreaks = Dailystreak.getshownStreakNum();
-        point = CurrentUser.userPoint??0;
-        tdyLoggedIn = Dailystreak.didUserLoginTdy;
-      });
     }else if(Dailystreak.getLastLogin()=='2 days ago or more'){
 
       await Dailystreak.resetDailyStreak();
       await Dailystreak.increaseDailyStreak(DateTime.now(), givePoint);
       await CurrentUser.initCurrentUser();
-      setState(() {
-        howManyStreaks = Dailystreak.getshownStreakNum();
-        point = CurrentUser.userPoint??0;
-        tdyLoggedIn = Dailystreak.didUserLoginTdy;
-      });
+      
     }
   }
 
   Widget getTier(){
-    if(purchasePoint<900){
 
+    var tierTextStyle = const TextStyle(color: Colorsetting.font, fontWeight: FontWeight.bold,fontSize: 16,);
+
+    if(purchasePoint<900){
       tier=tiers[0];
       nextPoint = 900;
       return Text(tiers[0],
-      style: const TextStyle(
-                color: Colorsetting.font,
-                fontWeight: FontWeight.bold,
-                fontSize: 16,
-              ));
+      style: tierTextStyle);
 
     }else if(purchasePoint>=900 && purchasePoint <2000){
       tier=tiers[1];
       nextPoint = 2000;
       return Text(tiers[1],
-      style: const TextStyle(
-              color: Colorsetting.font,
-              fontWeight: FontWeight.bold,
-              fontSize: 16,
-            ));
+      style: tierTextStyle
+      );
+
     }else if(purchasePoint>=2000 && purchasePoint<5000){
       tier = tiers[2];
       nextPoint = 5000;
       return Text(tiers[2],
-      style: const TextStyle(
-                color: Colorsetting.font,
-                fontWeight: FontWeight.bold,
-                fontSize: 16,
-              ));
+      style: tierTextStyle
+      );
+
     }else if(purchasePoint>=5000){
       tier=tiers[3];
       nextPoint = 5001;
       return Text(tiers[3],
-      style: const TextStyle(
-              color: Colorsetting.font,
-              fontWeight: FontWeight.bold,
-              fontSize: 16,
-            ));
+      style: tierTextStyle);
+
     }else{
       tier = 'error';
-      return const Text('error',
-      style: TextStyle(
-                color: Colorsetting.font,
-                fontWeight: FontWeight.bold,
-                fontSize: 16,
-              ));
+      return Text('error',
+      style: tierTextStyle);
     }
   }
 
@@ -622,16 +599,17 @@ class _HomePageState extends State<HomePage> {
                 ),
               ),
               onTap: () async {
-              isUpdatingPoint = true;
-               calculateStreakPoint();
-               showLoading();
-               await Dailystreak.fetchCurrentStreaks();
-               setState(() {
-                  isLoading = false;
+                isUpdatingPoint = true;
+                await calculateStreakPoint();
+                await Dailystreak.fetchCurrentStreaks();
+                isLoading = false;
+                isUpdatingPoint = false;
+                
+                setState(() {
                   howManyStreaks = Dailystreak.getshownStreakNum();
                   point = CurrentUser.userPoint??0;
+                  tdyLoggedIn = Dailystreak.didUserLoginTdy;
                 });
-                isUpdatingPoint = false;
               },
             ),
             
@@ -698,19 +676,5 @@ class _HomePageState extends State<HomePage> {
       ),
       )
     );
-  }
-  
-  Future<dynamic> showLoading(){
-    return showDialog(context: context, builder: (context){
-      return Dialog(
-        child: Container(
-          width: 200,
-          height: 400,
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(20),
-          ),
-        ),
-      );
-    });
   }
 }

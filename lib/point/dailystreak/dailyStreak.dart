@@ -95,6 +95,7 @@ class Dailystreak {
       }, SetOptions(merge: true));
 
       didUserLoginTdy = true;
+      
     } catch (e) {
       print("Error updating streak: $e");
     }
@@ -108,7 +109,6 @@ class Dailystreak {
       }, SetOptions(merge: true));
 
       streakNum = 0;
-      didUserLoginTdy = false;
 
       print("Streak has been reset.");
     } catch (e) {
